@@ -31,6 +31,8 @@ import iotlabcli.parser.node
 
 import iotlabaggregator
 
+import time
+
 HOSTNAME = os.uname()[1]
 
 
@@ -113,8 +115,9 @@ def get_experiment_nodes(api, exp_id=None, hostname=None):
 
     # Check that the experiment is running
     state = experiment.get_experiment(api, exp_id, 'state')["state"]
-    if state != 'Running':
-        raise RuntimeError("Experiment %u not running '%s'" % (exp_id, state))
+    while state != 'Running':
+        print "Experiment %u not running '%s'" % (exp_id, state)
+        time.sleep(60) # delays for 5 seconds
 
     # Check that the experiment is running
     resources = experiment.get_experiment(api, exp_id, 'resources')
