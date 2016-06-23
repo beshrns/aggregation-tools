@@ -116,12 +116,13 @@ def get_experiment_nodes(api, exp_id=None, hostname=None):
     # Check that the experiment is running
     state = experiment.get_experiment(api, exp_id, 'state')["state"]
     cnt = 0;
-    while state != 'Running':
-        print "Experiment %u not running '%s'. Waitng %d" % (exp_id, state, cnt)
-        time.sleep(60) # delays for 5 seconds
+    while state != 'Running' and state != 'Terminated':
+        print "Experiment %u not running but '%s'. Waiting %d" % (exp_id, state, cnt)
+        time.sleep(20) # delay
         cnt = cnt + 1
         state = experiment.get_experiment(api, exp_id, 'state')["state"]
-
+    if state == 'Terminated':
+        raise RuntimeError("Experiment %u not running but '%s'" % (exp_id, state))
     # Check that the experiment is running
     resources = experiment.get_experiment(api, exp_id, 'resources')
     return extract_nodes(resources, hostname)
